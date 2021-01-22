@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<!-- 引入样式 -->
+	<link href="css/index.css" rel="stylesheet">
+	<style>
+		.el-container {
+			margin-top: 50px;
+		}
+
+		.uploadDIV {
+			width: 1400px;
+			margin: 20px auto;
+		}
+
+		.el-input {
+			width: 500px;
+		}
+
+		.el-footer {
+			width: 300px;
+			margin: 20px auto;
+		}
+
+		.el-input__inner {
+			width: 530px;
+		}
+
+		.uptitle .el-link {
+			float: right;
+		}
+
+		.el-card {
+			margin-top: 20px;
+		}
+
+		.templateCard {
+			width: 500px;
+			margin: 0 auto;
+		}
+
+		.el-row {
+			margin-top: 40px;
+		}
+
+		.GradInput {
+			display: flex;
+			width: 530px;
+		}
+
+		.GradInput .el-input {
+			width: 225px;
+		}
+
+		.GradInput .el-input input {
+			width: 225px;
+		}
+
+		.Htitle {
+			text-align: center;
+		}
+
+		.el-form-item__content {
+			width: 500px;
+		}
+
+		.appendGrade {
+			width: 40px;
+			position: absolute;
+			right: 0;
+			text-align: center;
+			font-size: 20px;
+		}
+		.collegePosition {
+			position: relative;
+			width: 265px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app">
+		<el-container>
+			<el-header>
+				<el-steps :active="step" align-center>
+					<el-step title="步骤1" description="表单信息" @click.native="on_click(1)">
+						<div></div>
+					</el-step>
+					<el-step title="步骤2" description="数据文件上传" @click.native="on_click(2)"></el-step>
+					<el-step title="步骤3" description="模板文件上传" @click.native="on_click(3)"></el-step>
+				</el-steps>
+			</el-header>
+			<el-main>
+				<el-card class="box-card" v-show="step == 1">
+					<el-form :model="stuForm" :rules="stuRules" ref="stuForm" label-width="140px">
+						<h2 class="Htitle">数据基础信息</h2>
+						<el-row :gutter="20">
+							<el-col :span="9">
+								<el-form-item label="姓名" prop="student_name">
+									<el-input v-model="stuForm.student_name" placeholder="请输入姓名"></el-input>
+								</el-form-item>
+								<el-form-item label="职称" prop="title">
+									<el-select v-model="stuForm.title" placeholder="请选择">
+										<el-option v-for="item in titleOptions" :key="item.value" :label="item.label"
+											:value="item.value">
+										</el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
+							<el-col :span="9" :offset="2">
+								<el-form-item label="单位" prop="college_name">
+									<el-select v-model="stuForm.college_name" placeholder="请选择">
+										<el-option v-for="item in college_name1Options" :key="item.value"
+											:label="item.label" :value="item.value">
+										</el-option>
+									</el-select>
+								</el-form-item>
+								<el-form-item label="专业" prop="specialties">
+									<!-- <el-input v-model="stuForm.specialties"></el-input> -->
+									<el-select v-model="stuForm.specialties" placeholder="请选择">
+										<el-option v-for="item in specialties_options" :key="item.value"
+											:label="item.label" :value="item.value">
+										</el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
+						</el-row>
+						<h2 class="Htitle">课程信息</h2>
+						<el-row :gutter="20">
+							<el-col :span="9">
+								<el-form-item label="课程名" prop="course_name">
+									<el-input v-model="stuForm.course_name" placeholder="请输入课程名"></el-input>
+								</el-form-item>
+								<el-form-item label="学分" prop="credit">
+									<el-input v-model="stuForm.credit" placeholder="请输入学分"></el-input>
+								</el-form-item>
+								<el-form-item label="任课班级" prop="Grade">
+									<div class="GradInput">
+										<!-- <el-input placeholder="请输入内容" v-model="stuForm.level" placeholder="输入年级">
+											<template slot="append">级</template>
+										</el-input>
+										<el-input placeholder="请输入内容" v-model="stuForm.team" placeholder="请输入班级">
+											<template slot="append">班</template>
+										</el-input> -->
+										<div class="collegePosition">
+											<el-select v-model="stuForm.Grade" placeholder="请选择">
+												<el-option v-for="item in GradeOptions" :key="item.value"
+													:label="item.label" :value="item.value">
+												</el-option>
+											</el-select>
+											<span class="appendGrade">级</span>
+										</div>
+										<div class="collegePosition">
+											<el-select v-model="stuForm.Class" placeholder="请选择">
+												<el-option v-for="item in teamOptions" :key="item.value"
+													:label="item.label" :value="item.value">
+												</el-option>
+											</el-select>
+											<span class="appendGrade">班</span>
+										</div>
+									</div>
+								</el-form-item>
+								<!-- <el-form-item label="任课班级所在班" prop="Class">
+									<el-input v-model="stuForm.Class"></el-input>
+								</el-form-item> -->
+								<el-form-item label="开始时间" prop="date1">
+									<el-date-picker type="date" placeholder="选择日期" v-model="stuForm.date1"
+										style="width: 100%;" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+									</el-date-picker>
+								</el-form-item>
+							</el-col>
+							<el-col :span="9" :offset="2">
+								<el-form-item label="任课班级学院" prop="college_name1">
+									<el-select v-model="stuForm.college_name1" placeholder="请选择">
+										<el-option v-for="item in college_name1Options" :key="item.value"
+											:label="item.label" :value="item.value">
+										</el-option>
+									</el-select>
+								</el-form-item>
+								<!-- <el-form-item label="任课班级所在专业" prop="major">
+									<el-input v-model="stuForm.major" placeholder="请输入所在专业"></el-input>
+								</el-form-item> -->
+								<el-form-item label="任课班级所在专业" prop="major">
+									<el-select v-model="stuForm.major" placeholder="请选择">
+										<el-option v-for="item in major_options" :key="item.value" :label="item.label"
+											:value="item.value">
+										</el-option>
+									</el-select>
+								</el-form-item>
+								<el-form-item label="课程类别" prop="course_type">
+									<el-input v-model="stuForm.course_type" placeholder="请输入课程类别"></el-input>
+								</el-form-item>
+								<!-- <el-form-item label="任课班级所在级数" prop="Grade">
+									<el-select v-model="stuForm.Grade" placeholder="请选择">
+										<el-option v-for="item in GradeOptions" :key="item.value" :label="item.label"
+											:value="item.value">
+										</el-option>
+									</el-select>
+								</el-form-item> -->
+								<el-form-item label="结束时间" prop="date2">
+									<el-date-picker type="date" placeholder="选择日期" v-model="stuForm.date2"
+										style="width: 100%;" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+									</el-date-picker>
+								</el-form-item>
+							</el-col>
+						</el-row>
+					</el-form>
+				</el-card>
+				<div class="uploadDIV" v-show="step == 2">
+					<h2 class="Htitle">数据文件上传</h2>
+					<el-card class="box-card">
+						<p class="uptitle">作业成绩<el-link type="primary" href="#">作业成绩模板</el-link>
+						</p>
+						<el-upload ref="XLSupload1" action="#" :on-remove="handleRemove" :file-list="XLSfileList"
+							:before-upload="XLSbeforeAvatarUpload" :auto-upload="false" :on-change="Onupload1"
+							accept=".xls,.xlsx" :limit="1">
+							<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传xls或xlsx文件</div>
+						</el-upload>
+						<p class="uptitle">学生成绩<el-link type="primary" href="#">学生成绩模板</el-link>
+						</p>
+						<el-upload ref="XLSupload2" action="#" :on-remove="handleRemove" :file-list="XLSfileList"
+							:before-upload="XLSbeforeAvatarUpload" :auto-upload="false" :on-change="Onupload2"
+							accept=".xls,.xlsx" :limit="1">
+							<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传xls或者xlsx文件</div>
+						</el-upload>
+					</el-card>
+					<el-card class="box-card">
+						<p class="uptitle">工作计划<el-link type="primary" href="#">工作计划模板</el-link>
+						</p>
+						<el-upload ref="DOCXupload1" action="#" :on-remove="handleRemove" :file-list="DOCXfileList"
+							:before-upload="DOCXbeforeAvatarUpload" :auto-upload="false" :on-change="Onupload3"
+							accept=".docx" :limit="1">
+							<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传docx文件</div>
+						</el-upload>
+						<p class="uptitle">教学大纲<el-link type="primary" href="#">教学大纲模板</el-link>
+						</p>
+						<el-upload ref="DOCXupload2" action="#" :on-remove="handleRemove" :file-list="DOCXfileList"
+							:before-upload="DOCXbeforeAvatarUpload" :auto-upload="false" :on-change="Onupload4"
+							accept=".docx" :limit="1">
+							<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传docx文件</div>
+						</el-upload>
+					</el-card>
+				</div>
+				<div class="templateCard">
+					<el-card class="box-card" v-show="step == 3">
+						<h2 class="Htitle">文档下载</h2>
+						<p class="uptitle">模板上传</p>
+						<el-upload ref="templateUpload" action="#" :on-remove="handleRemove" :file-list="DOCXfileList"
+							:before-upload="DOCXbeforeAvatarUpload" :auto-upload="false" :on-change="Onupload5"
+							accept=".docx" :limit="1">
+							<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传docx文件</div>
+						</el-upload>
+					</el-card>
+				</div>
+			</el-main>
+			<el-footer>
+				<el-button type="primary" v-show="step != 1 && submitShow" @click="prevHalder">上一步</el-button>
+				<el-button type="primary" v-show="step != 3" @click="nextHalder">下一步</el-button>
+				<el-button type="primary" v-show="step == 3 && submitShow" @click="onSubmit">提交</el-button>
+				<a :href="'http://127.0.0.1:8000/' + dataURL">
+					<el-button type="success" v-show="!submitShow">下载</el-button>
+				</a>
+				<el-button type="primary" v-show="!submitShow" @click="resetForm">重新提交</el-button>
+			</el-footer>
+		</el-container>
+	</div>
+	<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+	<!-- 引入组件库 -->
+	<script src="js/index.js"></script>
+	<script src="js/js.cookie.min.js"></script>
+
+	<script>
+		var vm = new Vue({
+			el: '#app',
+			data() {
+				var validateDate2 = (rule, value, callback) => {
+					if (value === '') {
+						callback(new Error('请输入结束时间'));
+					}
+					if (this.stuForm.date1 > this.stuForm.date2) {
+						callback(new Error('结束时间不能大于起始时间'));
+					}
+					callback();
+				};
+				return {
+					step: 1,
+					submitShow: true,
+					dataURL: '',
+					stuForm: {
+						student_name: '',
+						title: '',
+						college_name: '',
+						specialties: '',
+						course_name: '',
+						course_type: '',
+						college_name1: '',
+						major: '',
+						Grade: '',
+						Class: '',
+						date1: '',
+						date2: '',
+						credit: '',
+						level: '',
+						team: '',
+						uploadList: []
+					},
+					buttonShow: true,
+					titleOptions: [{
+						value: '讲师',
+						label: '讲师'
+					}],
+					GradeOptions: [{
+						value: '20',
+						label: '20'
+					}, {
+						value: '19',
+						label: '19'
+					}, {
+						value: '18',
+						label: '18'
+					}, {
+						value: '17',
+						label: '17'
+					}, {
+						value: '16',
+						label: '16'
+					}],
+					teamOptions:[{
+						value: '1',
+						label: '1'
+					},{
+						value: '2',
+						label: '2'
+					}],
+					specialties_options: [{
+						value: '软件工程',
+						label: '软件工程'
+					}, {
+						value: '物联网工程',
+						label: '物联网工程'
+					}, {
+						value: '计算机科学与技术',
+						label: '计算机科学与技术'
+					}, {
+						value: '数据科学与大数据技术',
+						label: '数据科学与大数据技术'
+					}],
+					college_name1Options: [
+						// {
+						// 	value: '文学与传播学院',
+						// 	label: '文学与传播学院'
+						// }, {
+						// 	value: '马克思主义学院',
+						// 	label: '马克思主义学院'
+						// }, {
+						// 	value: '物理与信息工程学院',
+						// 	label: '物理与信息工程学院'
+						// }, 
+						{
+							value: '数计学院',
+							label: '数计学院'
+						}
+						// , {
+						// 	value: '外国语学院',
+						// 	label: '外国语学院'
+						// }, {
+						// 	value: '海洋与食品学院',
+						// 	label: '海洋与食品学院'
+						// }, {
+						// 	value: '化工与材料学院',
+						// 	label: '化工与材料学院'
+						// }, {
+						// 	value: '陈守仁商学院',
+						// 	label: '陈守仁商学院'
+						// }, {
+						// 	value: '纺织与服装学院',
+						// 	label: '纺织与服装学院'
+						// }, {
+						// 	value: '教育科学学院（特殊教育学院）',
+						// 	label: '教育科学学院（特殊教育学院）'
+						// }, {
+						// 	value: '音乐与舞蹈学院（泉州南音学院）',
+						// 	label: '音乐与舞蹈学院（泉州南音学院）'
+						// }, {
+						// 	value: '美术与设计学院（雕刻学院）',
+						// 	label: '美术与设计学院（雕刻学院）'
+						// }, {
+						// 	value: '体育学院',
+						// 	label: '体育学院'
+						// }, {
+						// 	value: '应用科技（航海）学院',
+						// 	label: '应用科技（航海）学院'
+						// }, {
+						// 	value: '继续教育学院',
+						// 	label: '继续教育学院'
+						// }, {
+						// 	value: '软件学院',
+						// 	label: '软件学院'
+						// }
+					],
+					major_options: [{
+						value: '软件工程',
+						label: '软件工程'
+					}, {
+						value: '物联网工程',
+						label: '物联网工程'
+					}, {
+						value: '计算机科学与技术',
+						label: '计算机科学与技术'
+					}, {
+						value: '数据科学与大数据技术',
+						label: '数据科学与大数据技术'
+					}],
+					stuRules: {
+						date1: [{
+							required: true,
+							message: '请选择起始时间',
+							trigger: 'blur'
+						}],
+						date2: [{
+							required: true,
+							message: '请选择结束时间',
+							trigger: 'blur'
+						}, {
+							validator: validateDate2,
+							trigger: 'blur',
+							message: '结束时间不能大于起始时间'
+						}]
+					},
+					XLSfileList: [],
+					DOCXfileList: []
+				}
+			},
+			created() {
+				if (!Cookies.get('Token')) {
+					window.location.href = "http://127.0.0.1:5500/login.html"
+				}
+			},
+			methods: {
+				prevHalder() {
+					this.step--;
+				},
+				async nextHalder() {
+					var flag = true
+					this.$refs.stuForm.validateField('date1', function (msg1) {
+						if (msg1 == "请选择起始时间") {
+							ELEMENT.Message.error("请选择起始和结束时间");
+							flag = false
+						} else {
+							flag = true
+						}
+					})
+					this.$refs.stuForm.validateField('date2', function (msg2) {
+						// console.log(flag)
+						console.log(msg2)
+						if (msg2 == '请选择结束时间' || msg2 == '结束时间不能大于起始时间') {
+							ELEMENT.Message.error("请选择起始和结束时间");
+							flag = false
+						} else {
+							flag = true
+						}
+						if (flag) {
+							console.log(vm.step)
+							vm.step = vm.step + 1
+							console.log(vm.step)
+						}
+					})
+
+				},
+				async Onupload1(file) {
+					file.className = "XLS1";
+					this.stuForm.uploadList.push(file)
+				},
+				Onupload2(file, fileList) {
+					file.className = "XLS2";
+					this.stuForm.uploadList.push(file)
+				},
+				Onupload3(file, fileList) {
+					file.className = "DOCX1";
+					this.stuForm.uploadList.push(file)
+				},
+				Onupload4(file, fileList) {
+					file.className = "DOCX2";
+					this.stuForm.uploadList.push(file)
+				},
+				Onupload5(file, fileList) {
+					file.className = "template";
+					this.stuForm.uploadList.push(file)
+				},
+				XLSbeforeAvatarUpload(file) {
+					let fileName = file.name.lastIndexOf("."); //取到文件名开始到最后一个点的长度
+					let fileNameLength = file.name.length; //取到文件名长度
+					let fileFormat = file.name.substring(fileName + 1, fileNameLength);
+					const isXLS = fileFormat === 'xls';
+					const isXLSX = fileFormat === 'xlsx';
+					if (!isXLS && !isXLSX) {
+						this.$message.error('上传文件只能是 xls 或 xlsx 格式!');
+					}
+					return (isXLS || isXLSX);
+				},
+				DOCXbeforeAvatarUpload(file) {
+					let fileName = file.name.lastIndexOf("."); //取到文件名开始到最后一个点的长度
+					let fileNameLength = file.name.length; //取到文件名长度
+					let fileFormat = file.name.substring(fileName + 1, fileNameLength);
+					const isDOCX = fileFormat === 'docx';
+					if (!isDOCX) {
+						this.$message.error('上传文件只能是 docx 格式!');
+					}
+					return isDOCX;
+				},
+				templateBeforeAvatarUpload(file) {
+					const isTemplate = file.type === 'docx';
+					if (!isTemplate) {
+						this.$message.error('上传文件只能是 docx 格式!');
+					}
+					return isTemplate;
+				},
+				async handleRemove(file, files) {
+					var res = await this.stuForm.uploadList.filter(item => {
+						return item.uid != file.uid
+					})
+					this.stuForm.uploadList = res
+					this.$message.error('成功移除' + file.name);
+				},
+				async onSubmit() {
+					// let token = Cookies.get('token');
+					var HTTP = axios.create({
+						baseURL: 'http://127.0.0.1:8000/', //这是基础url
+						withCredentials: true,
+						headers: {
+							"Content-Type": 'multipart/form-data'
+						},
+						// transformRequest: [function (data) {
+						// 	// Do whatever you want to transform the data
+						// 	let ret = ''
+						// 	for (let it in data) {
+						// 		ret += encodeURIComponent(it) + '=' + encodeURIComponent(
+						// 			data[it]) + '&'
+						// 	}
+						// 	return ret
+						// }]
+					});
+					// var result = await axios.get('http://127.0.0.1:8000/get-token/')
+					let fd = new FormData();
+					for (const key in this.stuForm) {
+						if (key != "uploadList") {
+							fd.append(key, this.stuForm[key]);
+						} else {
+							this.stuForm.uploadList.forEach(item => {
+								// var url = URL.createObjectURL(item.raw)
+								// item.url = url
+								var wj = item.raw
+								fd.append(item.className, wj)
+							});
+						}
+					}
+					var res = await HTTP.post('upfiles/', fd)
+					if (res.data.code == 200) {
+						this.submitShow = false
+						this.dataURL = res.data.data
+						this.$message.success('上传成功');
+					} else {
+						this.$message.error('上传失败')
+					}
+					// console.log(res)
+				},
+				// getDocx() {
+				// 	axios.get('http://127.0.0.1:8000/'+this.dataURL)
+				// },
+				resetForm() {
+					this.$refs.stuForm.resetFields()
+					this.$refs.templateUpload.clearFiles()
+					this.$refs.XLSupload1.clearFiles()
+					this.$refs.XLSupload2.clearFiles()
+					this.$refs.DOCXupload1.clearFiles()
+					this.$refs.DOCXupload2.clearFiles()
+					this.stuForm.uploadList = []
+					this.step = 1
+					this.submitShow = true
+				},
+				on_click(newStep) {
+					this.step = newStep
+				}
+			}
+		})
+	</script>
+</body>
+
+</html>

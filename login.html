@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登陆</title>
+    <!-- 引入样式 -->
+    <link href="css/index.css" rel="stylesheet">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            background: url(./img/bg.jpg)0px 0px no-repeat;
+            background-size: cover;
+        }
+
+        #app {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .el-card {
+            flex: 0 0 600px;
+            /* width: 600px; */
+            height: 300px;
+            /* margin: 175px auto; */
+            border-radius: 20px;
+        }
+
+        .el-form {
+            margin-top: 20px;
+        }
+
+        .el-button {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .box-h2 {
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .el-input {
+            width: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <el-card class="box-card">
+            <h2 class="box-h2">登陆</h2>
+            <el-form ref="loginForm" :rules="loginRules" :model="loginForm" label-width="80px">
+                <el-form-item label="工号" prop="user">
+                    <el-input v-model="loginForm.user"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input type="password" v-model="loginForm.password"></el-input>
+                </el-form-item>
+            </el-form>
+            <el-button type="success" @click="onSubmit" plain>登录</el-button>
+        </el-card>
+    </div>
+    <script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/js.cookie.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- 引入组件库 -->
+    <script src="js/index.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    loginForm: {
+                        "user": '',
+                        "password": ''
+                    },
+                    loginRules: {
+                        user: [{
+                            required: true,
+                            message: '用户名不能为空',
+                            trigger: 'blur'
+                        }],
+                        password: [{
+                            required: true,
+                            message: '密码不能为空',
+                            trigger: 'blur'
+                        }]
+                    }
+                }
+            },
+            methods: {
+                async onSubmit() {
+
+                    var HTTP = axios.create({
+                        baseURL: 'http://127.0.0.1:8000/', //这是基础url
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        transformRequest: [function (data) {
+                            // Do whatever you want to transform the data
+                            let ret = ''
+                            for (let it in data) {
+                                ret += encodeURIComponent(it) + '=' + encodeURIComponent(
+                                    data[it]) + '&'
+                            }
+                            return ret
+                        }]
+                    });
+                    var result = await axios.get('http://127.0.0.1:8000/get-token/')
+                    var res = await HTTP.post('login/', this.loginForm)
+                    if (res.data.code == 200) {
+                        this.$message({
+                            type: 'success',
+                            message: '登录成功'
+                        });
+                        Cookies.set('Token', res.data.data);
+
+
+                        window.location.href = "http://127.0.0.1:5500/index.html"
+                    }
+                    if (res.data.code != 200) {
+                        this.$message({
+                            type: 'warning',
+                            message: res.data.msg
+                        });
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
